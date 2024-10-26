@@ -121,7 +121,7 @@ def create_post(request):
 
 def blog_detail(request, id):
     post = get_object_or_404(Post, id=id)
-    return render(request, 'blog_detail.html', {'blog': post})
+    return render(request, 'blog_detail.html', {'post': post})
 
 def search_blogs(request):
     search_query = request.GET.get('query', '')
