@@ -17,15 +17,34 @@ A blogging application with login functionality. Once logged in, users can creat
 NOTE: On MacOS you might need to refer to a specific python version, e.g. python3 or pip3.
 
 1. Clone the repository to your machine
+
 2. Create a virtual environment inside the project folder
-    2.1. python -m venv env
-        2.1.1 Start the environment
-            2.1.1.1 Mac/Unix: source env/bin/activate
-            2.1.1.2 Windows: env\Scripts\activate.bat
+   - 2.1 Run the command:
+     ```bash
+     python -m venv env
+     ```
+   - 2.2 Start the environment:
+     - 2.2.1 Mac/Unix:
+       ```bash
+       source env/bin/activate
+       ```
+     - 2.2.2 Windows:
+       ```cmd
+       env\Scripts\activate.bat
+       ```
+
 3. Install requirements
-    3.1 pip install -r requirements.txt
-4. Start the server with python manage.py runserver
-    4.1 Access the blog site by navigating to 127.0.0.1:8000
+   - 3.1 Run the command:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+4. Start the server
+   - 4.1 Run the command:
+     ```bash
+     python manage.py runserver
+     ```
+   - 4.2 Access the blog site by navigating to [127.0.0.1:8000](http://127.0.0.1:8000)
 ----------------------------------------------------------------------------------------------------------
 ## User info and passwords
 
