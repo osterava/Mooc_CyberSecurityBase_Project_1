@@ -36,7 +36,7 @@ NOTE: On MacOS you might need to refer to a specific python version, e.g. python
 | heikki     | strongPassword | no       |
 
 ## Note that you might need to migrate first: 
-## python3 manage.py migrate   
+# python3 manage.py migrate   
 
 ----------------------------------------------------------------------------------------------------------
 
@@ -45,6 +45,8 @@ NOTE: On MacOS you might need to refer to a specific python version, e.g. python
 I have made flaws in code in purpose and then commented how they should be fixed. 
 
 ## 1. Fault
+
+A1:2017 - Injection: Unsanitized user input directly in database query
 
 # Fault Explanation:
 In the search_blogs function, user input from the search query is directly inserted into an SQL query without validation or sanitization. This allows malicious users to inject SQL code, potentially compromising the database and accessing unauthorized data. This vulnerability is known as SQL Injection, which can expose sensitive data.
@@ -55,16 +57,16 @@ Using Django’s ORM (Post.objects.filter(title__icontains=search_query)) safely
 ```python
 def search_blogs(request):
     search_query = request.GET.get('query', '')
-    # 1st Flaw:A1:2017 - Injection: Unsanitized user input directly in database query
-    posts = Post.objects.raw(f"SELECT * FROM posts WHERE title LIKE '%{search_query}%'")
+    posts = Post.objects.raw(f"SELECT * FROM posts WHERE title LIKE '%{search_query}%'") # can be injected
     return render(request, 'pages/search_results.html', {'posts': posts})    
-    # Fix: Use Django's ORM for safe queries
-    # posts = Post.objects.filter(title__icontains=search_query)
+    # posts = Post.objects.filter(title__icontains=search_query) # this is the fix
 ```
 
 This code snipped can be found in code `src/pages/views.py (starting at line 125)`
 
 ## 2. Fault
+
+A3:2017 - Sensitive Data Exposure: User password is in plain text, not including hash.
 
 # Fault Explanation:
 The register function currently stores user passwords in plain text without hashing. This flaw falls under A3:2017 - Sensitive Data Exposure, as it exposes user data to potential breaches or malicious insiders. Plain text passwords leave users vulnerable to credential theft if the database is compromised, enabling unauthorized access to user accounts.
@@ -87,7 +89,6 @@ def register(request):
 To protect passwords, the fix uses Django's built-in hashing function by calling set_password(), which hashes the password before saving it to the database. This approach securely stores the password in hashed form, mitigating risks of data exposure. Hashing passwords ensures that even if attackers gain access to the database, they cannot retrieve original passwords easily.
 
 ```python
-# 2nd Flaw: A3:2017 - Sensitive Data Exposure: User password is in plain text, not including hash.
 # Fix: Use Django's User model which handles password hashing
 # this is how user can be created safe way
 
@@ -109,6 +110,8 @@ This code snipped can be found `src/pages/views.py (starting at line 133)`
 
 ## 3. Fault
 
+A10:2017 - Security Logging and Monitoring Failures
+
 # Fault Explanation:
 `Setting DEBUG = True` in a production environment is a common security misconfiguration. When enabled, Django displays detailed error messages, including stack traces, sensitive data, and other diagnostic information that can reveal valuable details to attackers. This can lead to information exposure and makes the application vulnerable to exploitation.
 
@@ -118,6 +121,8 @@ This code snipped can be found `src/pages/views.py (starting at line 133)`
 This code snipped can be found `src/config/settings.py (line 25)`
 
 ## 4. Fault
+
+A2-2017 - Broken authentication
 
 # Fault Explanation:
 The login view lacks any restriction on the number of login attempts, exposing it to brute-force attacks (OWASP A2:2017 – Broken Authentication). Without limiting attempts, attackers can continuously try passwords until they gain unauthorized access. This flaw can compromise user accounts, especially if passwords are weak or previously breached.
@@ -143,7 +148,6 @@ class LoginView(View):
 To prevent brute-force attacks, the login view now implements an IP-based rate limit, allowing only five login attempts per user every five minutes. When the limit is reached, it returns an error message and temporarily locks the user out, making automated attacks harder to execute. The cache mechanism helps track and reset failed login attempts effectively.
 
 ```python
-# 4th flaw: A2-2017 Broken authentication:
 # Login is not limiting how many login attempts you can do 
 # Enabling brute-force attacks
 
@@ -174,6 +178,8 @@ class LoginView(View):
 This code snipped can be found `src/pages/views.py (line 18)`
 
 ## 5. Fault
+
+A10:2017 - Security Logging and Monitoring Failures
 
 # Fault Explanation:
 By default, Django applications do not log security-related events, which leaves them vulnerable to security incidents and monitoring failures (OWASP A10:2017). Without proper logging, it becomes difficult to track unauthorized access attempts, data breaches, or other suspicious activities. This lack of visibility can hinder incident response and make it challenging to identify patterns of abuse or to perform forensic analysis after a security incident.
