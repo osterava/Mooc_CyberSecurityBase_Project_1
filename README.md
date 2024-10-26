@@ -129,7 +129,7 @@ This code snipped can be found `src/pages/views.py (starting at line 133)`
 
 ## 3. Fault
 
-A10:2017 - Secourity Misconfiguration
+A6:2017 - Security Misconfiguration
 
 # Fault Explanation:
 `Setting DEBUG = True` in a production environment is a common security misconfiguration. When enabled, Django displays detailed error messages, including stack traces, sensitive data, and other diagnostic information that can reveal valuable details to attackers. This can lead to information exposure and makes the application vulnerable to exploitation.
