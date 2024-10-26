@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Blogs</h1>
+    
+    <!-- Search Form -->
+    <form method="get" action="{% url 'search_blogs' %}">
+        <input type="text" name="query" placeholder="Search for blogs..." value="{{ query }}">
+        <button type="submit" class="btn">Search</button>
+    </form>
+
+    <h2>Search Results for "{{ query }}"</h2>
+<ul>
+    {% for blog in blogs %}
+        <li>
+            <h3>{{ blog.title }}</h3>
+            <p>by {{ blog.author.username }} on {{ blog.created_at|date:"F j, Y, g:i a" }}</p>
+            <p><strong>Content:</strong> {{ blog.content }}</p>
+        </li>
+    {% empty %}
+        <li>No posts found matching your search.</li>
+    {% endfor %}
+</ul>
+
+    <a href="{% url 'home' %}">Back to Home</a>  <!-- Link to go back to home -->
+</body>
+</html>
