@@ -85,7 +85,7 @@ def search_blogs(request):
     search_query = request.GET.get('query', '')
     posts = Post.objects.filter(title__icontains=search_query)
     return render(request, 'pages/search_results.html', {'posts': posts}) 
-    ```
+```
 
 This code snipped can be found in code `src/pages/views.py (starting at line 125)`
 
