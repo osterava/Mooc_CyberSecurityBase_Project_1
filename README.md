@@ -70,16 +70,23 @@ A1:2017 - Injection: Unsanitized user input directly in database query
 # Fault Explanation:
 In the search_blogs function, user input from the search query is directly inserted into an SQL query without validation or sanitization. This allows malicious users to inject SQL code, potentially compromising the database and accessing unauthorized data. This vulnerability is known as SQL Injection, which can expose sensitive data.
 
+```python
+def search_blogs(request):
+    search_query = request.GET.get('query', '')
+    posts = Post.objects.raw(f"SELECT * FROM posts WHERE title LIKE '%{search_query}%'") # can be injected
+    return render(request, 'pages/search_results.html', {'posts': posts})    
+```
+
 # Fix: 
 Using Django’s ORM (Post.objects.filter(title__icontains=search_query)) safely processes the query by automatically sanitizing user input, preventing SQL injection. This approach mitigates security risks by handling query parameters securely and avoiding direct string formatting for database queries.
 
 ```python
 def search_blogs(request):
     search_query = request.GET.get('query', '')
-    posts = Post.objects.raw(f"SELECT * FROM posts WHERE title LIKE '%{search_query}%'") # can be injected
-    return render(request, 'pages/search_results.html', {'posts': posts})    
-    # posts = Post.objects.filter(title__icontains=search_query) # this is the fix
-```
+    posts = Post.objects.filter(title__icontains=search_query)
+    return render(request, 'pages/search_results.html', {'posts': posts})  
+      
+    ```
 
 This code snipped can be found in code `src/pages/views.py (starting at line 125)`
 
